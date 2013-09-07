@@ -24,7 +24,7 @@ class EventsController < ApplicationController
   # POST /events
   # POST /events.json
   def create
-    @event = Event.new(event_params.permit(:name))
+    @event = Event.new(event_params.permit(:name, :start_at, :end_at))
 
     respond_to do |format|
       if @event.save
@@ -62,13 +62,13 @@ class EventsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_event
-      @event = Event.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_event
+    @event = Event.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def event_params
-      params[:event]
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def event_params
+    params[:event]
+  end
 end

@@ -7,6 +7,10 @@
           %li= msg
   = f.label :name
   = f.text_field :name
+  = f.label :start_at
+  = f.text_field :start_at, class: 'datepicker'
+  = f.label :end_at
+  = f.text_field :end_at, class: 'datepicker'
 
   .actions
     = f.submit 'Save'
