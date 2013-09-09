@@ -4,5 +4,5 @@ $ ()->
   })
 
   $('#calendar').fullCalendar({
-    events: '/events.json'
+    events: '/events/schedule.json'
   })

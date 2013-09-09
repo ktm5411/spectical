@@ -13,4 +13,5 @@
  *= require twitter/bootstrap
  *= require fullcalendar
  *= require jquery.ui.all
+ *= require recurring_select
  */

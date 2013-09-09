@@ -1,10 +1,12 @@
-#calendar
+
 
 %h1 Listing events
 
-%table
+%table.table
   %tr
     %th Name
+    %th Start at
+    %th End at
     %th
     %th
     %th
@@ -12,10 +14,13 @@
   - @events.each do |event|
     %tr
       %td= event.name
+      %td= event.start_at
+      %td= event.end_at
       %td= link_to 'Show', event
       %td= link_to 'Edit', edit_event_path(event)
       %td= link_to 'Destroy', event, :method => :delete, :data => { :confirm => 'Are you sure?' }
 
 %br
 
+#calendar
 = link_to 'New Event', new_event_path

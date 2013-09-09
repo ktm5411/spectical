@@ -7,10 +7,17 @@
           %li= msg
   = f.label :name
   = f.text_field :name
+  %br
   = f.label :start_at
   = f.text_field :start_at, class: 'datepicker'
+  %br
   = f.label :end_at
   = f.text_field :end_at, class: 'datepicker'
+  %br
+  = f.select_recurring :recurring_rule,nil,allow_blank: true
+  %p
+    %label Until
+    %input.datepicker{name:'until'}
 
   .actions
     = f.submit 'Save'

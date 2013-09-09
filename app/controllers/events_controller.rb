@@ -1,10 +1,28 @@
 class EventsController < ApplicationController
   before_action :set_event, only: [:show, :edit, :update, :destroy]
 
-  # GET /events
-  # GET /events.json
   def index
     @events = Event.all
+  end
+
+  def schedule
+    @events = []
+    max_date = params[:end] ? Time.new(params[:end]) : Time.now + 3.years
+
+    Event.all.each do |event|
+      if not event.recurring_rule
+        @events << event
+      else
+        schedule = IceCube::Schedule.new event.start_at, end_time: max_date
+        schedule.add_recurrence_rule IceCube::Rule.from_hash(event.recurring)
+        schedule.each_occurrence do |date|
+          break if date > max_date or date > event.end_at
+          fake_event = event.dup
+          fake_event.start_at = date
+          @events << fake_event
+        end
+      end
+    end
   end
 
   # GET /events/1
@@ -24,8 +42,7 @@ class EventsController < ApplicationController
   # POST /events
   # POST /events.json
   def create
-    @event = Event.new(event_params.permit(:name, :start_at, :end_at))
-
+    @event = Event.new(event_params)
     respond_to do |format|
       if @event.save
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
@@ -69,6 +86,10 @@ class EventsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def event_params
-    params[:event]
+    #mixin until attr
+    mixed_recurring_rule = JSON.parse(params[:event][:recurring_rule])
+    mixed_recurring_rule[:until] == params[:until]
+    params[:event][:recurring_rule] == mixed_recurring_rule.to_json
+    params[:event].permit(:name, :start_at, :end_at, :recurring_rule)
   end
 end
