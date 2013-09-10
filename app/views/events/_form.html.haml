@@ -1,20 +1,26 @@
-= form_for @event do |f|
-  - if @event.errors.any?
+= form_for @event_form, url: events_path do |f|
+  - if @event_form.errors.any?
     #error_explanation
-      %h2= "#{pluralize(@event.errors.count, "error")} prohibited this event from being saved:"
+      %h2= "#{pluralize(@event_form.errors.count, "error")} prohibited this event from being saved:"
       %ul
-        - @event.errors.full_messages.each do |msg|
+        - @event_form.errors.full_messages.each do |msg|
           %li= msg
   = f.label :name
   = f.text_field :name
   %br
+  = f.label :all_day
+  = f.check_box :all_day
+  %br
   = f.label :start_at
   = f.text_field :start_at, class: 'datepicker'
+  = f.text_field :start_at_minutes, placeholder: '00'
+  = f.text_field :start_at_hours, placeholder: '00'
   %br
   = f.label :end_at
   = f.text_field :end_at, class: 'datepicker'
-  %br
-  = f.select_recurring :recurring_rule,nil,allow_blank: true
+  = f.text_field :end_at_minutes, placeholder: '00'
+  = f.text_field :end_at_hours, placeholder: '00'
+
   %p
     %label Until
     %input.datepicker{name:'until'}

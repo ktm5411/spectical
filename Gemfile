@@ -44,3 +44,5 @@ gem 'less-rails-bootstrap'
 gem 'activerecord-postgres-hstore'
 gem 'ice_cube'
 gem 'recurring_select', github: 'GetJobber/recurring_select'
+
+gem 'virtus'

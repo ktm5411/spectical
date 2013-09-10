@@ -23,6 +23,10 @@ class EventsController < ApplicationController
         end
       end
     end
+
+
+    render 'schedule', layout: false
+
   end
 
   # GET /events/1
@@ -32,20 +36,21 @@ class EventsController < ApplicationController
 
   # GET /events/new
   def new
-    @event = Event.new
+    @event_form = EventForm.new
   end
 
   # GET /events/1/edit
   def edit
+    @event_form = EventForm.new @event.attributes
   end
 
   # POST /events
   # POST /events.json
   def create
-    @event = Event.new(event_params)
+    @event_form = EventForm.new params[:event_form]
     respond_to do |format|
-      if @event.save
-        format.html { redirect_to @event, notice: 'Event was successfully created.' }
+      if @event_form.save
+        format.html { redirect_to @event_form.event, notice: 'Event was successfully created.' }
         format.json { render action: 'show', status: :created, location: @event }
       else
         format.html { render action: 'new' }
@@ -87,9 +92,11 @@ class EventsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def event_params
     #mixin until attr
-    mixed_recurring_rule = JSON.parse(params[:event][:recurring_rule])
-    mixed_recurring_rule[:until] == params[:until]
-    params[:event][:recurring_rule] == mixed_recurring_rule.to_json
-    params[:event].permit(:name, :start_at, :end_at, :recurring_rule)
+    #mixed_recurring_rule = JSON.parse(params[:event][:recurring_rule])
+    #mixed_recurring_rule[:until] == params[:until]
+    #params[:event][:recurring_rule] == mixed_recurring_rule.to_json
+    #
+    #start_at_time = params[:time][:start_at][:hours]
+    params[:event].permit!
   end
 end

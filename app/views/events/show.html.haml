@@ -1,5 +1,7 @@
 %p#notice= notice
-
+%p=@event.name
+%p=@event.start_at
+%p=@event.end_at
 
 = link_to 'Edit', edit_event_path(@event)
 \|

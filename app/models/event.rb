@@ -3,6 +3,7 @@ class Event < ActiveRecord::Base
   #serialize :recurring_rule, Hash
   validates_presence_of :start_at
 
+  attr_accessor :start_at_hours, :start_at_minutes, :end_at_hours, :end_at_minutes
   before_save :set_recurring_rule
 
   def recurring
@@ -11,7 +12,7 @@ class Event < ActiveRecord::Base
 
   private
   def set_recurring_rule
-    if self.recurring_rule.in? ['', 'null','false']
+    if self.recurring_rule.in? ['', 'null', 'false']
       self.recurring_rule = nil
     end
   end
