@@ -7,6 +7,7 @@ class EventForm
 
   attr_reader :event
 
+  attribute :id
   attribute :name, String
   attribute :all_day
 
@@ -21,6 +22,10 @@ class EventForm
 
   attribute :recurring_rule, String
   attribute :end_at, Date
+
+  attribute :calendars_ids, Array
+
+  attribute :recurring_type, String
 
   validates :name, presence: true
   validates_numericality_of :end_at_minutes, :start_at_minutes, less_than_or_equal_to: 60, more_than_or_equal_to: 0
@@ -71,12 +76,23 @@ class EventForm
     end
   end
 
+  def _to_partial_path
+    123
+  end
+
   private
 
   def persist!
+    recurring_rule = IceCube::Rule.from_hash rule_type: "IceCube::#{recurring_type}Rule"
+
+
     @event = Event.create name: name,
                           start_at: DateTime.parse("#{start_at} #{start_at_hours}:#{start_at_minutes}"),
                           end_at: DateTime.parse("#{end_at} #{end_at_hours}:#{end_at_minutes}"),
-                          all_day: all_day
+                          all_day: all_day,
+                          recurring_rule: recurring_rule,
+                          calendar_ids: calendars_ids
   end
+
+
 end

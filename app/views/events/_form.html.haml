@@ -20,7 +20,13 @@
   = f.text_field :end_at, class: 'datepicker'
   = f.text_field :end_at_minutes, placeholder: '00'
   = f.text_field :end_at_hours, placeholder: '00'
+  %p
+    = f.label :calendars
+    = f.select :calendars_ids, Calendar.all.collect {|p| [ p.name, p.id ] }, {}, {multiple: true, class: 'form-control'}
 
+  %p
+    = f.label :recurring_type
+    = f.select :recurring_type, ['Daily','Monthly']
   %p
     %label Until
     %input.datepicker{name:'until'}

@@ -4,7 +4,7 @@ class CreateCalendars < ActiveRecord::Migration
       t.string :name
     end
 
-    create_table :events_calendars do |t|
+    create_table :calendars_events do |t|
       t.belongs_to :event
       t.belongs_to :calendar
     end

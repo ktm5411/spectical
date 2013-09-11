@@ -17,6 +17,11 @@ ActiveRecord::Schema.define(version: 20130910020641) do
     t.string "name"
   end
 
+  create_table "calendars_events", force: true do |t|
+    t.integer "event_id"
+    t.integer "calendar_id"
+  end
+
   create_table "categories", force: true do |t|
     t.string "name"
   end
@@ -30,11 +35,6 @@ ActiveRecord::Schema.define(version: 20130910020641) do
     t.datetime "updated_at"
     t.text     "recurring_rule"
     t.boolean  "all_day",        default: true
-  end
-
-  create_table "events_calendars", force: true do |t|
-    t.integer "event_id"
-    t.integer "calendar_id"
   end
 
   create_table "events_categories", force: true do |t|
