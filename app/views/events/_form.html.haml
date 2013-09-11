@@ -1,4 +1,6 @@
-= form_for @event_form, url: events_path do |f|
+= form_for @event_form,
+ url: @event_form.id ? event_path(@event_form.id) : events_path,
+ method: @event_form.id ? 'patch' : 'post' do |f|
   - if @event_form.errors.any?
     #error_explanation
       %h2= "#{pluralize(@event_form.errors.count, "error")} prohibited this event from being saved:"

@@ -62,7 +62,7 @@ class EventsController < ApplicationController
   # PATCH/PUT /events/1
   # PATCH/PUT /events/1.json
   def update
-    @event_form = EventForm.new params[:event_form]
+    @event_form = EventForm.new params[:event_form].merge(id: params[:id])
     respond_to do |format|
       if @event_form.save
         format.html { redirect_to @event_form.event, notice: 'Event was successfully updated.' }

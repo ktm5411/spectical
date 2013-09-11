@@ -1,4 +1,5 @@
 class EventForm
+
   include Virtus
 
   extend ActiveModel::Naming
@@ -32,7 +33,7 @@ class EventForm
   validates_numericality_of :end_at_hours, :start_at_hours, less_than_or_equal_to: 12, more_than_or_equal_to: 0
 
   def persisted?
-    false
+    id || false
   end
 
   def save
@@ -84,14 +85,18 @@ class EventForm
 
   def persist!
     recurring_rule = IceCube::Rule.from_hash rule_type: "IceCube::#{recurring_type}Rule"
+    params = {
+        name: name,
+        start_at: DateTime.parse("#{start_at} #{start_at_hours}:#{start_at_minutes}"),
+        end_at: DateTime.parse("#{end_at} #{end_at_hours}:#{end_at_minutes}"),
+        all_day: all_day,
+        recurring_rule: recurring_rule.to_json,
+        calendar_ids: calendars_ids
+    }
 
+    @event = id ? Event.find(id) : Event.new
 
-    @event = Event.create name: name,
-                          start_at: DateTime.parse("#{start_at} #{start_at_hours}:#{start_at_minutes}"),
-                          end_at: DateTime.parse("#{end_at} #{end_at_hours}:#{end_at_minutes}"),
-                          all_day: all_day,
-                          recurring_rule: recurring_rule,
-                          calendar_ids: calendars_ids
+    @event.update_attributes params
   end
 
 
