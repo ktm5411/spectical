@@ -1,7 +1,8 @@
-
-= link_to 'New Event', new_event_path, class: 'btn btn-success'
 %h1 Listing events
-
+= link_to 'New Event', new_event_path, class: 'btn btn-success'
+= link_to 'Add CSV', "#{events_path}/upload_csv", class: 'btn btn-success'
+%br
+%br
 %table.table
   %tr
     %th Name
@@ -10,17 +11,12 @@
     %th
     %th
     %th
-
-  - @events.each do |event|
-    %tr
-      %td= event.name
-      %td= event.start_at
-      %td= event.end_at
-      %td= link_to 'Show', event
-      %td= link_to 'Edit', edit_event_path(event)
-      %td= link_to 'Destroy', event, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-%br
-
-#calendar
-
+  - if @events
+    - @events.each do |event|
+      %tr
+        %td= event.name
+        %td= event.start_at.strftime '%m/%d/%y %H:%M %P'
+        %td= event.end_at.strftime '%m/%d/%y %H:%M %P'
+        %td= link_to 'Show', event
+        %td= link_to 'Edit', edit_event_path(event)
+        %td= link_to 'Destroy', event, :method => :delete, :data => { :confirm => 'Are you sure?' }

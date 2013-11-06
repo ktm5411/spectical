@@ -1,6 +1,6 @@
 Spectical::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-
+  config.secret_key = '305a707e05100af9951b5dddcbf6eea2b6859cdab5819fb274e5ad9c796b6b7d33b833aed26bc618432992fdf8f72a6c675cc4718c0b23a8e432ca3f56d1643f'
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -9,7 +9,10 @@ Spectical::Application.configure do
   # and those relying on copy on write to perform better.
   # Rake tasks automatically ignore this option for performance.
   config.eager_load = true
-
+  #added fonts path
+  config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
+  # Precompile additional assets
+  config.assets.precompile += %w( .svg .eot .woff .ttf )
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true

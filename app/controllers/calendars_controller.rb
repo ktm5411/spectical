@@ -4,17 +4,18 @@ class CalendarsController < ApplicationController
   # GET /calendars
   # GET /calendars.json
   def index
-    @calendars = Calendar.all
+    @calendars = current_user.calendars
   end
 
   # GET /calendars/1
   # GET /calendars/1.json
   def show
+
   end
 
   # GET /calendars/new
   def new
-    @calendar = Calendar.new
+    @calendar = current_user.calendars.new
   end
 
   # GET /calendars/1/edit
@@ -24,7 +25,7 @@ class CalendarsController < ApplicationController
   # POST /calendars
   # POST /calendars.json
   def create
-    @calendar = Calendar.new(calendar_params)
+    @calendar = current_user.calendars.new(calendar_params)
 
     respond_to do |format|
       if @calendar.save
@@ -64,7 +65,7 @@ class CalendarsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_calendar
-      @calendar = Calendar.find(params[:id])
+      @calendar = current_user.calendars.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

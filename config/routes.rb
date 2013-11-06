@@ -1,10 +1,43 @@
 Spectical::Application.routes.draw do
+
+  resources :categories
+
+  get '/schedule' => 'schedule#show'
+
+  devise_for :users,
+             :path => '',
+             :path_names => {
+                 :sign_in => 'login',
+                 :sign_out => 'logout',
+                 :password => 'secret',
+                 :confirmation => 'verification',
+                 :unlock => 'unblock',
+                 :registration => 'register',
+                 :sign_up => 'cmon_let_me_in'
+             }
+
   resources :events do
     get 'schedule', on: :collection
+    get 'all_locations', on: :collection
+    get 'all_addresses', on: :collection
+    get 'all_cities', on: :collection
+    get 'all_states', on: :collection
+    get 'all_phones', on: :collection
+    get 'all_urls', on: :collection
+    get 'upload_csv',to: 'events#new_csv', on: :collection
+    post 'upload_csv',to: 'events#csv_to_events', on: :collection
   end
 
+  resources :categories
+
+  resources :areas
+
+  resources :token_authentications, :only => [:create, :destroy]
+
   resources :calendars
+
   root to: 'events#index'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

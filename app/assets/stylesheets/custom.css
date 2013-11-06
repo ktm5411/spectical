@@ -2,10 +2,10 @@
 /* CSS Document */
 
 textarea {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 textarea.title,
@@ -24,21 +24,21 @@ input[type="search"].title,
 input[type="tel"].title,
 input[type="color"].title,
 .uneditable-input.title {
-  font-size: 42px;
-  line-height: 50px;
-  height: 51px;
-  padding: 10px 5px;
-  text-indent: 0;
-  width:100%;
+    font-size: 42px;
+    line-height: 50px;
+    height: 51px;
+    padding: 10px 5px;
+    text-indent: 0;
+    width:100%;
 }
 
 .ilabel {margin-right:10px;}
 h1 {font-weight:300;}
 
 #action-bar{
-	position:fixed;
-	top:100px;
-	left:25px;
+    position:fixed;
+    top:100px;
+    left:25px;
 }
 
 .middle {margin-top:-25px;}

@@ -1,32 +1,112 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [:show, :edit, :update, :destroy]
+  require 'csv'
+  before_action :authenticate_user!
+
+  before_action :is_author?, only: [:destroy, :update]
+  before_action :find_event, only: [:show, :update, :edit, :destroy]
 
   def index
-    @events = Event.all
+    @events = current_user.events
+  end
+
+  def all_locations
+    respond_to do |f|
+      f.json { render json: Event.all.map { |x| x.location }.delete_if { |y| y.nil? or y=='' }.to_json }
+    end
+  end
+
+  def all_addresses
+    respond_to do |f|
+      f.json { render json: Event.all.map { |x| x.address }.delete_if { |y| y.nil? or y=='' }.to_json }
+    end
+  end
+
+  def all_cities
+    respond_to do |f|
+      f.json { render json: Event.all.map { |x| x.city }.delete_if { |y| y.nil? or y=='' }.to_json }
+    end
+  end
+
+  def all_states
+    respond_to do |f|
+      f.json { render json: Event.all.map { |x| x.state }.delete_if { |y| y.nil? or y=='' }.to_json }
+    end
+  end
+
+  def all_phones
+    respond_to do |f|
+      f.json { render json: Event.all.map { |x| x.phone }.delete_if { |y| y.nil? or y=='' }.to_json }
+    end
+  end
+
+  def all_urls
+    respond_to do |f|
+      f.json { render json: Event.all.map { |x| x.link }.delete_if { |y| y.nil? or y=='' }.to_json }
+    end
+  end
+
+  def to_boolean(str)
+    return '1' if str.match /^true$/i
+    '0'
+  end
+
+  def new_csv
+    render :csv_to_events
+  end
+
+  def csv_to_events
+    calendar = Calendar.find '5260b7dc00e477b34f000002'
+    CSV.parse(get_csv, :headers => true) do |row|
+      start_time, end_time = DateTime.strptime(row[2],'%H:%M:%S'), DateTime.strptime(row[4],'%H:%M:%S')
+      start_at, end_at = Date.strptime(row[1], '%m/%d/%Y'), Date.strptime(row[3], '%m/%d/%Y')
+      event = calendar.events.new(
+        user: User.find('524995dbf47dc1781f000001'),
+        name: row[0],
+        start_at: start_at,
+        start_at_hours: start_time.strftime('%I'),
+        start_at_minutes: start_time.strftime('%M'),
+        start_am_pm: start_time.strftime('%P'),
+        end_at: end_at,
+        end_at_hours: end_time.strftime('%I'),
+        end_at_minutes: end_time.strftime('%M'),
+        end_am_pm: end_time.strftime('%P'),
+        all_day: to_boolean(row[5]),
+        description: row[6],
+        location: row[7],
+        link: row[8],
+        recurring_type: 'null',
+        published: '1'
+      )
+      event.save!
+    end
   end
 
   def schedule
     @events = []
     max_date = params[:end] ? Time.new(params[:end]) : Time.now + 3.years
 
-    Event.all.each do |event|
-      if not event.recurring_rule
+    current_user.published_events.each do |event|
+      if event.recurring_rule==IceCube::SingleOccurrenceRule
         @events << event
       else
-        schedule = IceCube::Schedule.new event.start_at, end_time: max_date
-        schedule.add_recurrence_rule IceCube::Rule.from_hash(event.recurring)
+        schedule = event.schedule
         schedule.each_occurrence do |date|
           break if date > max_date or date > event.end_at
           fake_event = event.dup
+          fake_event.parent_id = event.id
           fake_event.start_at = date
+          if event.all_day?
+            fake_event.end_at = date
+          else
+            fake_event.end_at = event.start_at
+            fake_event.end_at_minutes = event.end_at_minutes
+            fake_event.end_am_pm =event.end_am_pm
+          end
           @events << fake_event
         end
       end
     end
-
-
     render 'schedule', layout: false
-
   end
 
   # GET /events/1
@@ -36,21 +116,21 @@ class EventsController < ApplicationController
 
   # GET /events/new
   def new
-    @event_form = EventForm.new
+    @event = current_user.events.new
   end
 
   # GET /events/1/edit
   def edit
-    @event_form = EventForm.new @event.attributes
+    @event = Event.find(params[:id])
   end
 
   # POST /events
   # POST /events.json
   def create
-    @event_form = EventForm.new params[:event_form]
+    @event = current_user.events.new event_params
     respond_to do |format|
-      if @event_form.save
-        format.html { redirect_to @event_form.event, notice: 'Event was successfully created.' }
+      if @event.save
+        format.html { redirect_to @event, notice: 'Event was successfully created.' }
         format.json { render action: 'show', status: :created, location: @event }
       else
         format.html { render action: 'new' }
@@ -62,10 +142,10 @@ class EventsController < ApplicationController
   # PATCH/PUT /events/1
   # PATCH/PUT /events/1.json
   def update
-    @event_form = EventForm.new params[:event_form].merge(id: params[:id])
+    @event.update_attributes event_params
     respond_to do |format|
-      if @event_form.save
-        format.html { redirect_to @event_form.event, notice: 'Event was successfully updated.' }
+      if @event.save
+        format.html { redirect_to @event, notice: 'Event was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -85,19 +165,25 @@ class EventsController < ApplicationController
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_event
-    @event = Event.find(params[:id])
-  end
-
   # Never trust parameters from the scary internet, only allow the white list through.
   def event_params
-    #mixin until attr
-    #mixed_recurring_rule = JSON.parse(params[:event][:recurring_rule])
-    #mixed_recurring_rule[:until] == params[:until]
-    #params[:event][:recurring_rule] == mixed_recurring_rule.to_json
-    #
-    #start_at_time = params[:time][:start_at][:hours]
-    params[:event].permit!
+    params.require(:event).permit!
+  end
+
+  def find_event
+    events = current_user.events.where(id: params[:id])
+    @event = events.any? ? events.first : nil
+  end
+
+  def get_csv
+    begin
+      File.read(params[:file].tempfile)
+    rescue
+      ''
+    end
+  end
+
+  def is_author?
+    current_user.events.map { |x| x.id }.include? params[:id]
   end
 end
